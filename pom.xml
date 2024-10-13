@@ -38,7 +38,6 @@
       <scope>provided</scope>
     </dependency>
 
-
     <dependency>
       <artifactId>postgresql</artifactId>
       <groupId>org.postgresql</groupId>
@@ -53,6 +52,11 @@
       <artifactId>spring-kafka-test</artifactId>
       <groupId>org.springframework.kafka</groupId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>h2</artifactId>
+      <groupId>com.h2database</groupId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
   <description>Demo project for Spring Boot</description>
