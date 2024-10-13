@@ -12,21 +12,25 @@ public class ReservationService {
 
   private final ReservationRepository reservationRepository;
   private final EventRepository eventRepository;
+  private final KafkaProducerService kafkaProducerService;
 
   public ReservationService(ReservationRepository reservationRepository,
-      EventRepository eventRepository) {
+      EventRepository eventRepository, KafkaProducerService kafkaProducerService) {
     this.reservationRepository = reservationRepository;
     this.eventRepository = eventRepository;
+    this.kafkaProducerService = kafkaProducerService;
   }
 
   public Reservation reserveEvent(Long eventId, String userEmail) {
     Optional<Event> eventOptional = eventRepository.findById(eventId);
     if (eventOptional.isPresent()) {
       Event event = eventOptional.get();
-      event.decreaseAvailableSeats();  // 좌석 감소 로직 호출
+      event.decreaseAvailableSeats();
       eventRepository.save(event);
 
-      // 빌더 패턴으로 예약 생성
+      kafkaProducerService.sendReservationMessage(
+          "Reservation successful for event: " + event.getName());
+
       Reservation reservation = Reservation.builder()
           .event(event)
           .userEmail(userEmail)
