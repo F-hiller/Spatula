@@ -4,6 +4,8 @@ import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.repository.EventRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +15,11 @@ public class EventService {
 
   public EventService(EventRepository eventRepository) {
     this.eventRepository = eventRepository;
+  }
+
+  @Cacheable(value = "events", key = "#id")
+  public Optional<Event> getEventById(Long id) {
+    return eventRepository.findById(id);
   }
 
   public List<Event> getAllEvents() {
