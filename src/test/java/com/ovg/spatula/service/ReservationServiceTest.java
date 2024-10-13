@@ -30,6 +30,9 @@ public class ReservationServiceTest {
   @Mock
   private EventRepository eventRepository;
 
+  @Mock
+  private KafkaProducerService kafkaProducerService;
+
   @InjectMocks
   private ReservationService reservationService;
 
