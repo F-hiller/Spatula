@@ -1,6 +1,6 @@
 package com.ovg.spatula.controller;
 
-import com.ovg.spatula.entity.Reservation;
+import com.ovg.spatula.dto.ReservationResponse;
 import com.ovg.spatula.service.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +20,7 @@ public class ReservationController {
   }
 
   @PostMapping("/{eventId}")
-  public ResponseEntity<Reservation> reserveEvent(@PathVariable Long eventId,
+  public ResponseEntity<ReservationResponse> reserveEvent(@PathVariable Long eventId,
       @RequestParam String userEmail) {
     return ResponseEntity.ok(reservationService.reserveEvent(eventId, userEmail));
   }

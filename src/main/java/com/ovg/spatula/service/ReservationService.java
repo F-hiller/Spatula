@@ -1,5 +1,6 @@
 package com.ovg.spatula.service;
 
+import com.ovg.spatula.dto.ReservationResponse;
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.entity.Reservation;
 import com.ovg.spatula.repository.EventRepository;
@@ -21,7 +22,7 @@ public class ReservationService {
     this.kafkaProducerService = kafkaProducerService;
   }
 
-  public Reservation reserveEvent(Long eventId, String userEmail) {
+  public ReservationResponse reserveEvent(Long eventId, String userEmail) {
     Optional<Event> eventOptional = eventRepository.findById(eventId);
     if (eventOptional.isPresent()) {
       Event event = eventOptional.get();
@@ -35,7 +36,7 @@ public class ReservationService {
           .event(event)
           .userEmail(userEmail)
           .build();
-      return reservationRepository.save(reservation);
+      return new ReservationResponse(reservationRepository.save(reservation));
     } else {
       throw new RuntimeException("Event not found.");
     }
