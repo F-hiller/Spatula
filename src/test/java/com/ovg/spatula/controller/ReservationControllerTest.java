@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.repository.EventRepository;
 import com.ovg.spatula.repository.ReservationRepository;
-import java.time.LocalDateTime;
+import com.ovg.spatula.testbase.AddBaseEventsTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-public class ReservationControllerTest {
+public class ReservationControllerTest extends AddBaseEventsTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -36,13 +36,7 @@ public class ReservationControllerTest {
   @Test
   @DisplayName("예약 추가 통합 테스트")
   public void testReserveEvent() throws Exception {
-    // given
-    Event event = Event.builder()
-        .name("Test Event")
-        .eventDateTime(LocalDateTime.of(2024, 12, 15, 10, 0))
-        .totalSeats(100)
-        .availableSeats(100)
-        .build();
+    Event event = baseEvent;
     eventRepository.save(event);
 
     String userEmail = "test@example.com";
@@ -53,7 +47,8 @@ public class ReservationControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.userEmail").value(userEmail))
-        .andExpect(jsonPath("$.event.name").value("Test Event"))
-        .andExpect(jsonPath("$.event.availableSeats").value(99));  // 좌석 감소 확인
+        .andExpect(jsonPath("$.eventResponse.name").value(event.getName()))
+        .andExpect(jsonPath("$.eventResponse.availableSeats").value(
+            event.getTotalSeats() - 1));
   }
 }

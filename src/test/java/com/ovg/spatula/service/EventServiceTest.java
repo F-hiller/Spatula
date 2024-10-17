@@ -2,14 +2,18 @@ package com.ovg.spatula.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ovg.spatula.dto.EventResponse;
 import com.ovg.spatula.entity.Event;
+import com.ovg.spatula.entity.Location;
 import com.ovg.spatula.repository.EventRepository;
-import java.time.LocalDateTime;
+import com.ovg.spatula.repository.LocationRepository;
+import com.ovg.spatula.testbase.AddBaseEventsTest;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -20,10 +24,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class EventServiceTest {
+public class EventServiceTest extends AddBaseEventsTest {
 
   @Mock
   private EventRepository eventRepository;
+
+  @Mock
+  private LocationRepository locationRepository;
 
   @InjectMocks
   private EventService eventService;
@@ -32,18 +39,15 @@ public class EventServiceTest {
   @DisplayName("모든 이벤트 조회")
   public void testGetAllEvents() {
     // given
-    Event event1 = Event.builder().name("Event 1").eventDateTime(LocalDateTime.now())
-        .totalSeats(100).availableSeats(100).build();
-    Event event2 = Event.builder().name("Event 2").eventDateTime(LocalDateTime.now())
-        .totalSeats(200).availableSeats(200).build();
-    when(eventRepository.findAll()).thenReturn(Arrays.asList(event1, event2));
+    List<Event> listEvent = Arrays.asList(baseEvent, baseDiffPlaceEvent);
+    when(eventRepository.findAll()).thenReturn(listEvent);
 
     // when
-    List<Event> events = eventService.getAllEvents();
+    List<EventResponse> events = eventService.getAllEvents();
 
     // then
     assertNotNull(events);
-    assertEquals(2, events.size());
+    assertEquals(listEvent.size(), events.size());
     verify(eventRepository, times(1)).findAll();
   }
 
@@ -51,17 +55,46 @@ public class EventServiceTest {
   @DisplayName("이벤트 생성")
   public void testCreateEvent() {
     // given
-    Event event = Event.builder().name("New Event").eventDateTime(LocalDateTime.now())
-        .totalSeats(150).availableSeats(150).build();
+    Event event = fullyBookedEvent;
+    Location location = daeguLocation;
+    when(locationRepository.save(any(Location.class))).thenReturn(location);
     when(eventRepository.save(any(Event.class))).thenReturn(event);
 
     // when
-    Event savedEvent = eventService.createEvent("New Event", LocalDateTime.now(), 150);
+    EventResponse savedEvent = eventService.createEvent(fullyBookeEventRequest);
 
     // then
     assertNotNull(savedEvent);
-    assertEquals("New Event", savedEvent.getName());
-    assertEquals(150, savedEvent.getTotalSeats());
+    assertEquals(fullyBookeEventRequest.getName(), savedEvent.getName());
+    assertEquals(fullyBookeEventRequest.getTotalSeats(), savedEvent.getTotalSeats());
+    assertEquals(fullyBookeEventRequest.getBasicLocationDto().getLat(),
+        savedEvent.getBasicLocationDto().getLat());
+    assertEquals(fullyBookeEventRequest.getBasicLocationDto().getLng(),
+        savedEvent.getBasicLocationDto().getLng());
+
+    verify(locationRepository, times(1)).save(any(Location.class));
     verify(eventRepository, times(1)).save(any(Event.class));
+  }
+
+  @Test
+  @DisplayName("근처 이벤트 조회 테스트")
+  public void testGetEventsNearby() {
+    // given
+    double lng = 35.883570;
+    double lat = 128.59224;
+    double distance = 1000; // 1km
+
+    List<Event> events = Arrays.asList(baseEvent, fullyBookedEvent);
+
+    when(eventRepository.findEventsWithinDistance(eq(lng), eq(lat), eq(distance))).thenReturn(
+        events);
+
+    // when
+    List<EventResponse> nearbyEvents = eventService.getEventsNearby(lng, lat, distance);
+
+    // then
+    assertNotNull(nearbyEvents);
+    assertEquals(events.size(), nearbyEvents.size());
+    verify(eventRepository, times(1)).findEventsWithinDistance(eq(lng), eq(lat), eq(distance));
   }
 }

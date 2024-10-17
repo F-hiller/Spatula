@@ -9,10 +9,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ovg.spatula.dto.ReservationResponse;
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.entity.Reservation;
 import com.ovg.spatula.repository.EventRepository;
 import com.ovg.spatula.repository.ReservationRepository;
+import com.ovg.spatula.testbase.AddBaseEventsTest;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ReservationServiceTest {
+public class ReservationServiceTest extends AddBaseEventsTest {
 
   @Mock
   private ReservationRepository reservationRepository;
@@ -40,18 +42,19 @@ public class ReservationServiceTest {
   @DisplayName("이벤트 예약 성공")
   public void testReserveEventSuccess() {
     // given
-    Event event = Event.builder().name("Test Event").totalSeats(100).availableSeats(50).build();
+    Event event = baseEvent;
     when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
     when(reservationRepository.save(any(Reservation.class))).thenAnswer(
         invocation -> invocation.getArgument(0));
 
     // when
-    Reservation reservation = reservationService.reserveEvent(1L, "test@example.com");
+    ReservationResponse reservationResponse = reservationService.reserveEvent(1L,
+        "test@example.com");
 
     // then
-    assertNotNull(reservation);
-    assertEquals("test@example.com", reservation.getUserEmail());
-    assertEquals(event, reservation.getEvent());
+    assertNotNull(reservationResponse);
+    assertEquals("test@example.com", reservationResponse.getUserEmail());
+    assertEquals(event.getId(), reservationResponse.getEventResponse().getId());
     verify(eventRepository, times(1)).findById(1L);
     verify(reservationRepository, times(1)).save(any(Reservation.class));
   }
@@ -60,7 +63,7 @@ public class ReservationServiceTest {
   @DisplayName("이벤트 좌석 부족으로 예약 실패")
   public void testReserveEventNoAvailableSeats() {
     // given
-    Event event = Event.builder().name("Test Event").totalSeats(100).availableSeats(0).build();
+    Event event = fullyBookedEvent;
     when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
     // when
