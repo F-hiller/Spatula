@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:15
+    image: postgis/postgis:15-3.4
     container_name: spatula_postgres
     environment:
       POSTGRES_USER: event_user
@@ -12,6 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgre/sql:/docker-entrypoint-initdb.d  # 초기화 스크립트 마운트
     networks:
       - event_network
 
@@ -20,6 +21,8 @@ services:
     container_name: spatula_redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
     networks:
       - event_network
 
@@ -31,6 +34,8 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
       - "2181:2181"
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
     networks:
       - event_network
 
@@ -43,9 +48,12 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_BROKER_ID: 1
+      KAFKA_CLUSTER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
+    volumes:
+      - ./docker/kafka:/var/lib/kafka/data
     networks:
       - event_network
 
@@ -55,3 +63,5 @@ networks:
 
 volumes:
   postgres_data:
+  zookeeper_data:
+  redis_data:
