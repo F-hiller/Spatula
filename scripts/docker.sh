@@ -43,22 +43,14 @@ fi
 # Docker Desktop이 실행되었으면 docker-compose 실행
 docker-compose down
 echo "Docker down."
-# 디렉터리가 존재하는지 확인
-if [ -d "$ROOT_DIR/docker/data" ]; then
+
+if [ -d "$ROOT_DIR/docker/kafka" ]; then
   echo "data 디렉터리가 이미 존재합니다."
-else
-  echo "data 디렉터리가 존재하지 않습니다. 새로 생성 중..."
-  mkdir -p "$ROOT_DIR/docker/data"
-  echo "data 디렉터리가 생성되었습니다."
+  rm -rf "$ROOT_DIR/docker/kafka"
 fi
 
-rm -rf "$ROOT_DIR/docker/data"
+mkdir -p "$ROOT_DIR/docker/kafka"
+echo "data 디렉터리가 생성되었습니다."
 
-if [ -d "$ROOT_DIR/.env" ]; then
-  echo ".env로 도커 실행."
-  docker-compose --env-file "$ROOT_DIR/.env" up -d
-else
-  echo ".env 확인 불가/ 도커 실행."
-  docker-compose up -d
-fi
+docker-compose up -d
 echo "Docker up complete."
