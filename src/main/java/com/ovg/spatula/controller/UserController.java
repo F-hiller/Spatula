@@ -1,36 +1,55 @@
 package com.ovg.spatula.controller;
 
-import com.ovg.spatula.entity.User;
+import com.ovg.spatula.dto.UserResponse;
 import com.ovg.spatula.service.UserService;
-import java.util.Optional;
+import com.ovg.spatula.util.CookieManager;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
   private final UserService userService;
+  private final CookieManager cookieManager;
 
-  public UserController(UserService userService) {
+  public UserController(UserService userService, CookieManager cookieManager) {
     this.userService = userService;
+    this.cookieManager = cookieManager;
   }
 
-  @PostMapping
-  public ResponseEntity<User> addUser(@RequestParam String deviceId, @RequestParam String name) {
-    User user = userService.addUser(deviceId, name);
-    return ResponseEntity.ok(user);
+  @GetMapping("/code")
+  public ResponseEntity<?> assignUserId(HttpServletRequest httpServletRequest,
+      HttpServletResponse httpServletResponse) {
+    Map<String, String> map = cookieManager.getCookies(httpServletRequest, List.of("code"));
+    String code = map.get("code");
+    if (code != null) {
+      return ResponseEntity.ok("User code already exists.");
+    }
+    UserResponse userResponse = userService.addUser();
+    cookieManager.addCookie(httpServletResponse, "code", userResponse.getCode(),
+        60 * 60 * 24 * 365);
+
+    return ResponseEntity.ok(userResponse);
   }
 
-  @GetMapping("/{deviceId}")
-  public ResponseEntity<User> getUserByDeviceId(@PathVariable String deviceId) {
-    Optional<User> userOptional = userService.findUserByDeviceId(deviceId);
-    return userOptional.map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
+  @GetMapping("/info")
+  public ResponseEntity<UserResponse> getUserInfo(HttpServletRequest httpServletRequest,
+      HttpServletResponse httpServletResponse) {
+    Map<String, String> map = cookieManager.getCookies(httpServletRequest, List.of("code"));
+    String code = map.get("code");
+    if (code == null) {
+      throw new NoSuchElementException("User code not exist.");
+    }
+    UserResponse userResponse = userService.getUserInfo(code);
+
+    return ResponseEntity.ok(userResponse);
   }
 }
