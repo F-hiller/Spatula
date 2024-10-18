@@ -13,11 +13,9 @@ public class UserResponse {
 
   private String email;
   private String name;
-  private String code;
 
   public UserResponse(User user) {
     this.email = user.getEmail();
     this.name = user.getName();
-    this.code = user.getCode();
   }
 }

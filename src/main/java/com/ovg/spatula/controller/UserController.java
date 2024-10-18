@@ -26,18 +26,17 @@ public class UserController {
   }
 
   @GetMapping("/code")
-  public ResponseEntity<?> assignUserId(HttpServletRequest httpServletRequest,
+  public ResponseEntity<String> assignUserId(HttpServletRequest httpServletRequest,
       HttpServletResponse httpServletResponse) {
     Map<String, String> map = cookieManager.getCookies(httpServletRequest, List.of("code"));
     String code = map.get("code");
     if (code != null) {
       return ResponseEntity.ok("User code already exists.");
     }
-    UserResponse userResponse = userService.addUser();
-    cookieManager.addCookie(httpServletResponse, "code", userResponse.getCode(),
-        60 * 60 * 24 * 365);
+    code = userService.addUser();
+    cookieManager.addCookie(httpServletResponse, "code", code, 60 * 60 * 24 * 365);
 
-    return ResponseEntity.ok(userResponse);
+    return ResponseEntity.ok("User code setup.");
   }
 
   @GetMapping("/info")

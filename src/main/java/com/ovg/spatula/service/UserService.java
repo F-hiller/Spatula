@@ -20,12 +20,18 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
-  public UserResponse addUser() {
+  /**
+   * @return 생성된 사용자 Code
+   */
+  public String addUser() {
+    String code = UUID.randomUUID().toString();
     User user = User.builder()
         .name(NicknameGenerator.generateNickname())
-        .code(UUID.randomUUID().toString())
+        .code(code)
         .build();
-    return new UserResponse(userRepository.save(user));
+    userRepository.save(user);
+
+    return code;
   }
 
   public UserResponse getUserInfo(String code) {
