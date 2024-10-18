@@ -1,4 +1,4 @@
-package com.ovg.spatula.dto;
+package com.ovg.spatula.dto.response;
 
 import com.ovg.spatula.entity.Reservation;
 import lombok.AccessLevel;

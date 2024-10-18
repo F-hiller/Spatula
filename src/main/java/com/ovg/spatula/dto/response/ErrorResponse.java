@@ -1,4 +1,4 @@
-package com.ovg.spatula.dto;
+package com.ovg.spatula.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;

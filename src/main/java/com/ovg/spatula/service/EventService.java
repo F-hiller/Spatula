@@ -1,8 +1,8 @@
 package com.ovg.spatula.service;
 
 import com.ovg.spatula.dto.BasicLocationDto;
-import com.ovg.spatula.dto.EventRequest;
-import com.ovg.spatula.dto.EventResponse;
+import com.ovg.spatula.dto.request.EventRequest;
+import com.ovg.spatula.dto.response.EventResponse;
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.entity.Location;
 import com.ovg.spatula.entity.User;

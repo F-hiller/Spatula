@@ -1,6 +1,6 @@
 package com.ovg.spatula.service;
 
-import com.ovg.spatula.dto.UserResponse;
+import com.ovg.spatula.dto.response.UserResponse;
 import com.ovg.spatula.entity.User;
 import com.ovg.spatula.exception.exceptions.NoSuchCodeException;
 import com.ovg.spatula.repository.UserRepository;

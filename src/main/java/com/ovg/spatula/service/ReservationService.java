@@ -1,6 +1,6 @@
 package com.ovg.spatula.service;
 
-import com.ovg.spatula.dto.ReservationResponse;
+import com.ovg.spatula.dto.response.ReservationResponse;
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.entity.Reservation;
 import com.ovg.spatula.repository.EventRepository;

@@ -1,7 +1,7 @@
 package com.ovg.spatula.controller;
 
-import com.ovg.spatula.dto.EventRequest;
-import com.ovg.spatula.dto.EventResponse;
+import com.ovg.spatula.dto.request.EventRequest;
+import com.ovg.spatula.dto.response.EventResponse;
 import com.ovg.spatula.exception.exceptions.NoSuchCodeException;
 import com.ovg.spatula.service.EventService;
 import com.ovg.spatula.util.CookieManager;

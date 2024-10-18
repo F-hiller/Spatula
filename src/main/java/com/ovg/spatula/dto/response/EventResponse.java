@@ -1,5 +1,6 @@
-package com.ovg.spatula.dto;
+package com.ovg.spatula.dto.response;
 
+import com.ovg.spatula.dto.BasicLocationDto;
 import com.ovg.spatula.entity.Event;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;

@@ -1,6 +1,6 @@
 package com.ovg.spatula.exception;
 
-import com.ovg.spatula.dto.ErrorResponse;
+import com.ovg.spatula.dto.response.ErrorResponse;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.ovg.spatula.entity;
 
-import com.ovg.spatula.dto.EventRequest;
+import com.ovg.spatula.dto.request.EventRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

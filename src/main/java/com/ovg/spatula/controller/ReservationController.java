@@ -1,6 +1,6 @@
 package com.ovg.spatula.controller;
 
-import com.ovg.spatula.dto.ReservationResponse;
+import com.ovg.spatula.dto.response.ReservationResponse;
 import com.ovg.spatula.service.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

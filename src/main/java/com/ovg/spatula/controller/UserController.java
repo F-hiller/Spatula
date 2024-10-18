@@ -1,6 +1,6 @@
 package com.ovg.spatula.controller;
 
-import com.ovg.spatula.dto.UserResponse;
+import com.ovg.spatula.dto.response.UserResponse;
 import com.ovg.spatula.exception.exceptions.NoSuchCodeException;
 import com.ovg.spatula.service.UserService;
 import com.ovg.spatula.util.CookieManager;
