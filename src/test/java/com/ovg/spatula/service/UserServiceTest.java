@@ -1,15 +1,17 @@
 package com.ovg.spatula.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.ovg.spatula.dto.response.UserResponse;
 import com.ovg.spatula.entity.User;
+import com.ovg.spatula.exception.exceptions.NoSuchCodeException;
 import com.ovg.spatula.repository.UserRepository;
+import com.ovg.spatula.testbase.AddBaseEventsTest;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceTest extends AddBaseEventsTest {
 
   @Mock
   private UserRepository userRepository;
@@ -28,65 +30,44 @@ public class UserServiceTest {
   private UserService userService;
 
   @Test
-  @DisplayName("기기 ID로 사용자 추가")
+  @DisplayName("사용자 추가 테스트")
   public void testAddUser() {
     // given
-    String deviceId = "unique-device-id-1234";
-    String name = "John Doe";
-    User user = User.builder().deviceId(deviceId).name(name).build();
-
-    when(userRepository.findByDeviceId(deviceId)).thenReturn(Optional.empty());
-    when(userRepository.save(any(User.class))).thenReturn(user);
+    when(userRepository.save(any(User.class))).thenReturn(dummyUser1);
 
     // when
-    User savedUser = userService.addUser(deviceId, name);
+    String resultCode = userService.addUser();
 
     // then
-    assertNotNull(savedUser);
-    assertEquals(deviceId, savedUser.getDeviceId());
-    assertEquals(name, savedUser.getName());
-    verify(userRepository, times(1)).findByDeviceId(deviceId);
     verify(userRepository, times(1)).save(any(User.class));
+    assertEquals(36, resultCode.length());
   }
 
   @Test
-  @DisplayName("이미 존재하는 사용자 반환")
-  public void testReturnExistingUser() {
+  @DisplayName("사용자 정보 가져오기 성공 테스트")
+  public void testGetUserInfoSuccess() {
     // given
-    String deviceId = "existing-device-id";
-    String name = "Jane Doe";
-    User existingUser = User.builder().deviceId(deviceId).name(name).build();
-
-    when(userRepository.findByDeviceId(deviceId)).thenReturn(Optional.of(existingUser));
+    when(userRepository.findByCode(userCode1)).thenReturn(Optional.of(dummyUser1));
 
     // when
-    User resultUser = userService.addUser(deviceId, name);
+    UserResponse userResponse = userService.getUserInfo(userCode1);
 
     // then
-    assertNotNull(resultUser);
-    assertEquals(deviceId, resultUser.getDeviceId());
-    assertEquals(name, resultUser.getName());
-    verify(userRepository, times(1)).findByDeviceId(deviceId);
-    verify(userRepository, never()).save(any(User.class));  // 저장 메서드는 호출되지 않음
+    verify(userRepository, times(1)).findByCode(userCode1);
+    assertEquals(dummyUser1.getName(), userResponse.getName());
   }
 
   @Test
-  @DisplayName("기기 ID로 사용자 조회")
-  public void testFindUserByDeviceId() {
+  @DisplayName("존재하지 않는 사용자 코드로 정보 가져오기 실패 테스트")
+  public void testGetUserInfoFailure() {
     // given
-    String deviceId = "unique-device-id-5678";
-    String name = "Alice";
-    User user = User.builder().deviceId(deviceId).name(name).build();
+    when(userRepository.findByCode(userCode1)).thenReturn(Optional.empty());
 
-    when(userRepository.findByDeviceId(deviceId)).thenReturn(Optional.of(user));
+    // when & then
+    assertThrows(NoSuchCodeException.class, () -> {
+      userService.getUserInfo(userCode1);
+    });
 
-    // when
-    Optional<User> foundUser = userService.findUserByDeviceId(deviceId);
-
-    // then
-    assertNotNull(foundUser);
-    assertEquals(true, foundUser.isPresent());
-    assertEquals(deviceId, foundUser.get().getDeviceId());
-    verify(userRepository, times(1)).findByDeviceId(deviceId);
+    verify(userRepository, times(1)).findByCode(userCode1);
   }
 }

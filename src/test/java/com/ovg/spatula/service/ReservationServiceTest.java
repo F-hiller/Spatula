@@ -9,7 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ovg.spatula.dto.ReservationResponse;
+import com.ovg.spatula.dto.response.ReservationResponse;
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.entity.Reservation;
 import com.ovg.spatula.repository.EventRepository;

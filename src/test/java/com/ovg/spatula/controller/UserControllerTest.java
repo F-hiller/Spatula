@@ -1,13 +1,12 @@
 package com.ovg.spatula.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ovg.spatula.entity.User;
 import com.ovg.spatula.repository.UserRepository;
+import com.ovg.spatula.service.UserService;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,40 +29,46 @@ public class UserControllerTest {
   @Autowired
   private ObjectMapper objectMapper;  // JSON 변환을 위해 사용
 
+
+  @Autowired
+  private UserService userService;
+
   @Autowired
   private UserRepository userRepository;
 
   @Test
-  @DisplayName("사용자 추가 통합 테스트")
+  @DisplayName("사용자 추가")
   public void testAddUser() throws Exception {
     // given
-    String deviceId = "test-device-id";
-    String name = "John Doe";
 
     // when & then (POST 요청으로 사용자 추가)
-    mockMvc.perform(post("/api/users")
-            .param("deviceId", deviceId)
-            .param("name", name)
+    mockMvc.perform(get("/api/user/code")
             .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.deviceId").value(deviceId))
-        .andExpect(jsonPath("$.name").value(name));
+        .andExpect(status().isOk());
   }
 
   @Test
-  @DisplayName("기기 ID로 사용자 조회 통합 테스트")
-  public void testGetUserByDeviceId() throws Exception {
+  @DisplayName("사용자 정보 조회")
+  public void testGetUserInfo() throws Exception {
     // given
-    String deviceId = "test-device-id";
-    String name = "Jane Doe";
-    User user = User.builder().deviceId(deviceId).name(name).build();
-    userRepository.save(user);
+    String code = userService.addUser();
 
-    // when & then (GET 요청으로 사용자 조회)
-    mockMvc.perform(get("/api/users/{deviceId}", deviceId)
+    // when & then (POST 요청으로 사용자 추가)
+    mockMvc.perform(get("/api/user/info")
+            .cookie(new Cookie("code", code))
             .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.deviceId").value(deviceId))
-        .andExpect(jsonPath("$.name").value(name));
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("사용자 정보 조회 실패")
+  public void testFailGetUserInfo() throws Exception {
+    // given
+
+    // when & then (POST 요청으로 사용자 추가)
+    mockMvc.perform(get("/api/user/info")
+            .cookie(new Cookie("code", "Meaningless code."))
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest());
   }
 }

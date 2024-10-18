@@ -34,7 +34,7 @@ public class ReservationControllerTest extends AddBaseEventsTest {
   private ReservationRepository reservationRepository;
 
   @Test
-  @DisplayName("예약 추가 통합 테스트")
+  @DisplayName("예약 추가")
   public void testReserveEvent() throws Exception {
     Event event = baseEvent;
     eventRepository.save(event);

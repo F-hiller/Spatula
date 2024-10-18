@@ -6,9 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ovg.spatula.dto.EventRequest;
+import com.ovg.spatula.dto.request.EventRequest;
+import com.ovg.spatula.dto.response.UserResponse;
 import com.ovg.spatula.service.EventService;
+import com.ovg.spatula.service.UserService;
 import com.ovg.spatula.testbase.AddBaseEventsTest;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +34,20 @@ public class EventControllerTest extends AddBaseEventsTest {
   private ObjectMapper objectMapper;
   @Autowired
   private EventService eventService;
+  @Autowired
+  private UserService userService;
 
   @Test
-  @DisplayName("이벤트 추가 통합 테스트")
+  @DisplayName("이벤트 추가")
   public void testAddEvent() throws Exception {
     // given
     EventRequest eventRequest = baseEventRequest;
+    String code = userService.addUser();
+    UserResponse userResponse = userService.getUserInfo(code);
 
     // when & then (POST 요청으로 이벤트 추가)
     mockMvc.perform(post("/api/events")
+            .cookie(new Cookie("code", code))
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(eventRequest)))
         .andExpect(status().isOk())
@@ -47,16 +55,21 @@ public class EventControllerTest extends AddBaseEventsTest {
         .andExpect(
             jsonPath("$.basicLocationDto.lng").value(eventRequest.getBasicLocationDto().getLng()))
         .andExpect(
-            jsonPath("$.basicLocationDto.lat").value(eventRequest.getBasicLocationDto().getLat()));
+            jsonPath("$.basicLocationDto.lat").value(eventRequest.getBasicLocationDto().getLat()))
+        .andExpect(jsonPath("$.userResponse.name").value(userResponse.getName()));
   }
 
   @Test
-  @DisplayName("이벤트 조회 통합 테스트")
+  @DisplayName("이벤트 조회")
   public void testGetAllEvents() throws Exception {
     // given
-    eventService.createEvent(baseEventRequest);
-    eventService.createEvent(baseDiffPlaceEventRequest);
-    eventService.createEvent(fullyBookeEventRequest);
+    String code1 = userService.addUser();
+    UserResponse userResponse1 = userService.getUserInfo(code1);
+    String code2 = userService.addUser();
+    UserResponse userResponse2 = userService.getUserInfo(code2);
+    eventService.createEvent(baseEventRequest, code1);
+    eventService.createEvent(baseDiffPlaceEventRequest, code2);
+    eventService.createEvent(fullyBookeEventRequest, code1);
     int eventCnt = 3;
 
     // when & then (GET 요청으로 모든 이벤트 조회)
@@ -71,6 +84,8 @@ public class EventControllerTest extends AddBaseEventsTest {
         .andExpect(jsonPath("$[1].name").value(baseDiffPlaceEventRequest.getName()))
         .andExpect(
             jsonPath("$[1].basicLocationDto.lng").value(
-                baseDiffPlaceEventRequest.getBasicLocationDto().getLng()));
+                baseDiffPlaceEventRequest.getBasicLocationDto().getLng()))
+        .andExpect(jsonPath("$[0].userResponse.name").value(userResponse1.getName()))
+        .andExpect(jsonPath("$[1].userResponse.name").value(userResponse2.getName()));
   }
 }

@@ -8,14 +8,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ovg.spatula.dto.EventResponse;
+import com.ovg.spatula.dto.response.EventResponse;
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.entity.Location;
+import com.ovg.spatula.entity.User;
 import com.ovg.spatula.repository.EventRepository;
 import com.ovg.spatula.repository.LocationRepository;
+import com.ovg.spatula.repository.UserRepository;
 import com.ovg.spatula.testbase.AddBaseEventsTest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +34,9 @@ public class EventServiceTest extends AddBaseEventsTest {
 
   @Mock
   private LocationRepository locationRepository;
+
+  @Mock
+  private UserRepository userRepository;
 
   @InjectMocks
   private EventService eventService;
@@ -57,11 +63,13 @@ public class EventServiceTest extends AddBaseEventsTest {
     // given
     Event event = fullyBookedEvent;
     Location location = daeguLocation;
+    User user = dummyUser1;
+    when(userRepository.findByCode(any(String.class))).thenReturn(Optional.of(user));
     when(locationRepository.save(any(Location.class))).thenReturn(location);
     when(eventRepository.save(any(Event.class))).thenReturn(event);
 
     // when
-    EventResponse savedEvent = eventService.createEvent(fullyBookeEventRequest);
+    EventResponse savedEvent = eventService.createEvent(fullyBookeEventRequest, userCode1);
 
     // then
     assertNotNull(savedEvent);
