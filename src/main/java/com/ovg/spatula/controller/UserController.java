@@ -1,13 +1,13 @@
 package com.ovg.spatula.controller;
 
 import com.ovg.spatula.dto.UserResponse;
+import com.ovg.spatula.exception.exceptions.NoSuchCodeException;
 import com.ovg.spatula.service.UserService;
 import com.ovg.spatula.util.CookieManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +46,7 @@ public class UserController {
     Map<String, String> map = cookieManager.getCookies(httpServletRequest, List.of("code"));
     String code = map.get("code");
     if (code == null) {
-      throw new NoSuchElementException("User code not exist.");
+      throw new NoSuchCodeException();
     }
     UserResponse userResponse = userService.getUserInfo(code);
 
