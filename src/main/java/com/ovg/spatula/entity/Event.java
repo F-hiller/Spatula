@@ -1,6 +1,7 @@
 package com.ovg.spatula.entity;
 
 import com.ovg.spatula.dto.EventRequest;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,21 +28,32 @@ public class Event {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(nullable = false, unique = true)
   private String name;
+
+  @Column(nullable = false)
   private LocalDateTime eventDateTime;
+
+  @Column(nullable = false)
   private int totalSeats;
+
+  @Column(nullable = false)
   private int availableSeats;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "location_id")
-  private Location location;  // Location과의 관계 설정
+  private Location location;
 
-  public Event(EventRequest eventRequest, Location location) {
+  @OneToOne(fetch = FetchType.LAZY)
+  private User organizer;
+
+  public Event(EventRequest eventRequest, Location location, User user) {
     this.name = eventRequest.getName();
     this.eventDateTime = eventRequest.getEventDateTime();
     this.totalSeats = eventRequest.getTotalSeats();
     this.availableSeats = eventRequest.getTotalSeats();
     this.location = location;
+    this.organizer = user;
   }
 
   public void decreaseAvailableSeats() {

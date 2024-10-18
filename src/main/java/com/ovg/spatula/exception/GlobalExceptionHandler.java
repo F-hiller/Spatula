@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex,
       WebRequest request) {
-    ErrorResponse errorResponse = new ErrorResponse("IllegalArgument: " + ex.getMessage(),
+    ErrorResponse errorResponse = new ErrorResponse("IllegalArgument: ",
         HttpStatus.BAD_REQUEST.value());
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, WebRequest request) {
-    ErrorResponse errorResponse = new ErrorResponse("서버 오류: " + ex.getMessage(),
+    ErrorResponse errorResponse = new ErrorResponse("서버 내부 오류.",
         HttpStatus.INTERNAL_SERVER_ERROR.value());
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }

@@ -18,6 +18,7 @@ public class EventResponse {
   private int totalSeats;
   private int availableSeats;
   private BasicLocationDto basicLocationDto;
+  private UserResponse userResponse;
 
   public EventResponse(Event event) {
     this.id = event.getId();
@@ -26,5 +27,6 @@ public class EventResponse {
     this.totalSeats = event.getTotalSeats();
     this.availableSeats = event.getAvailableSeats();
     this.basicLocationDto = new BasicLocationDto(event.getLocation());
+    this.userResponse = new UserResponse(event.getOrganizer());
   }
 }
