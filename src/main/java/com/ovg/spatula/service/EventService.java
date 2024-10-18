@@ -11,12 +11,10 @@ import com.ovg.spatula.repository.EventRepository;
 import com.ovg.spatula.repository.LocationRepository;
 import com.ovg.spatula.repository.UserRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +31,6 @@ public class EventService {
     this.eventRepository = eventRepository;
     this.locationRepository = locationRepository;
     this.userRepository = userRepository;
-  }
-
-  @Cacheable(value = "events", key = "#id")
-  public Optional<EventResponse> getEventById(Long id) {
-    return eventRepository.findById(id).map(EventResponse::new);
   }
 
   public List<EventResponse> getAllEvents() {

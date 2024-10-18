@@ -64,9 +64,7 @@ public class UserServiceTest extends AddBaseEventsTest {
     when(userRepository.findByCode(userCode1)).thenReturn(Optional.empty());
 
     // when & then
-    assertThrows(NoSuchCodeException.class, () -> {
-      userService.getUserInfo(userCode1);
-    });
+    assertThrows(NoSuchCodeException.class, () -> userService.getUserInfo(userCode1));
 
     verify(userRepository, times(1)).findByCode(userCode1);
   }

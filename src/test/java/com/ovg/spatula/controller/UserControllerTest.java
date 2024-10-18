@@ -3,8 +3,6 @@ package com.ovg.spatula.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ovg.spatula.repository.UserRepository;
 import com.ovg.spatula.service.UserService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
@@ -27,14 +25,7 @@ public class UserControllerTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private ObjectMapper objectMapper;  // JSON 변환을 위해 사용
-
-
-  @Autowired
   private UserService userService;
-
-  @Autowired
-  private UserRepository userRepository;
 
   @Test
   @DisplayName("사용자 추가")

@@ -40,8 +40,7 @@ public class UserController {
   }
 
   @GetMapping("/info")
-  public ResponseEntity<UserResponse> getUserInfo(HttpServletRequest httpServletRequest,
-      HttpServletResponse httpServletResponse) {
+  public ResponseEntity<UserResponse> getUserInfo(HttpServletRequest httpServletRequest) {
     Map<String, String> map = cookieManager.getCookies(httpServletRequest, List.of("code"));
     String code = map.get("code");
     if (code == null) {

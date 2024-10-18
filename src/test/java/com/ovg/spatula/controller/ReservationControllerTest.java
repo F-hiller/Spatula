@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ovg.spatula.entity.Event;
 import com.ovg.spatula.repository.EventRepository;
-import com.ovg.spatula.repository.ReservationRepository;
 import com.ovg.spatula.testbase.AddBaseEventsTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,9 +28,6 @@ public class ReservationControllerTest extends AddBaseEventsTest {
 
   @Autowired
   private EventRepository eventRepository;
-
-  @Autowired
-  private ReservationRepository reservationRepository;
 
   @Test
   @DisplayName("예약 추가")

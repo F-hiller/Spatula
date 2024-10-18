@@ -32,9 +32,6 @@ public class ReservationServiceTest extends AddBaseEventsTest {
   @Mock
   private EventRepository eventRepository;
 
-  @Mock
-  private KafkaProducerService kafkaProducerService;
-
   @InjectMocks
   private ReservationService reservationService;
 
@@ -67,9 +64,8 @@ public class ReservationServiceTest extends AddBaseEventsTest {
     when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
     // when
-    Exception exception = assertThrows(RuntimeException.class, () -> {
-      reservationService.reserveEvent(1L, "test@example.com");
-    });
+    Exception exception = assertThrows(RuntimeException.class,
+        () -> reservationService.reserveEvent(1L, "test@example.com"));
 
     // then
     assertEquals("No available seats.", exception.getMessage());
@@ -84,9 +80,8 @@ public class ReservationServiceTest extends AddBaseEventsTest {
     when(eventRepository.findById(1L)).thenReturn(Optional.empty());
 
     // when
-    Exception exception = assertThrows(RuntimeException.class, () -> {
-      reservationService.reserveEvent(1L, "test@example.com");
-    });
+    Exception exception = assertThrows(RuntimeException.class,
+        () -> reservationService.reserveEvent(1L, "test@example.com"));
 
     // then
     assertEquals("Event not found.", exception.getMessage());
